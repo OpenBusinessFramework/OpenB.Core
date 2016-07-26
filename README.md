@@ -1,0 +1,2 @@
+# OpenB.Core
+Core Functionality 
