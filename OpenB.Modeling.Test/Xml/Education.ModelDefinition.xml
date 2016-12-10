@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<openb:modeldefinition xmlns:openb="http://schemas.openb.org/modeldefinition">
+  <key>Education</key>
+  <name>Education</name>
+  <description>Education</description>
+  <properties>
+    <property name="Institution" definition="institution" />
+    <property name="StartDate" definition="Date" />
+    <property name="EndDate" definition="Date" />
+    <property name="Title" reference="name" />
+    <property name="Description" reference="description" />
+  </properties>
+</openb:modeldefinition>

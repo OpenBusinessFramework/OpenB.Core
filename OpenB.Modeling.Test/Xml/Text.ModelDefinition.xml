@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<openb:encapsulatedmodeldefinition xmlns:openb="http://schemas.openb.org/modeldefinition">
+  <key>Text</key>
+  <name>Text</name>
+  <description>Text</description>
+  <encapsulatedType>System.String</encapsulatedType>
+</openb:encapsulatedmodeldefinition>

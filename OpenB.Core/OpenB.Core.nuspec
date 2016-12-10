@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>OpenB Team</authors>
+    <owners>OpenB Team</owners>
+    <projectUrl>https://github.com/OpenBusinessFramework/OpenB.Core</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>$title$</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>OpenB Core Libraries</tags>
+  </metadata>
+</package>

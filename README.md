@@ -1,2 +1,2 @@
-# OpenB.Core
-Core Functionality 
+# OpenB
+Open Business Framework
