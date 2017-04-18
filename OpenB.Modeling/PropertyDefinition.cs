@@ -3,7 +3,8 @@
 namespace OpenB.Modeling
 {
     public class PropertyDefinition
-    {
+    {      
+
         public PropertyFlags PropertyFlags { get; private set; }
         public string Name { get; private set; }
         public ModelDefinition ModelDefinition { get; private set; }
@@ -38,6 +39,7 @@ namespace OpenB.Modeling
         {
             PropertyFlags = propertyFlags;
         }
+     
     }
 
     public enum Cardinality

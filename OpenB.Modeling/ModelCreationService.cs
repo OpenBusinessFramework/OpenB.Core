@@ -1,8 +1,10 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Channels;
 using System.Text;
 using Microsoft.CSharp;
 using OpenB.Core;
@@ -10,6 +12,121 @@ using OpenB.Core.Utils;
 
 namespace OpenB.Modeling
 {
+    public class ProjectModuleCreator
+    {
+        IList<ModelClassCreator> classBuilders;
+        readonly Project project;
+        readonly FormattedStringBuilder formattedStringBuilder;
+
+        public static ProjectModuleCreator GetInstance(Project project)
+        {
+            if (project == null)
+                throw new ArgumentNullException(nameof(project));
+
+            return new ProjectModuleCreator(new FormattedStringBuilder(), project);
+        }
+        internal ProjectModuleCreator(FormattedStringBuilder formattedStringBuilder, Project project)
+        {
+            if (formattedStringBuilder == null)
+                throw new ArgumentNullException(nameof(formattedStringBuilder));
+            if (project == null)
+                throw new ArgumentNullException(nameof(project));
+
+            this.project = project;
+            this.classBuilders = new List<ModelClassCreator>();
+            this.formattedStringBuilder = formattedStringBuilder;
+
+        }
+
+        public ModelClassCreator AddClass(ModelDefinition modelDefinition)
+        {
+            ModelClassCreator creator = new ModelClassCreator(formattedStringBuilder, modelDefinition);
+            classBuilders.Add(creator);
+
+            return creator;
+        }
+    }
+
+    public class ModelClassCreator : IClassPartCreator
+    {
+        private ModelDefinition modelDefinition;
+        private IList<ModelPropertyCreator> propertyCreators;
+        readonly FormattedStringBuilder formattedStringBuilder;
+
+        public ModelClassCreator(FormattedStringBuilder formattedStringBuilder, ModelDefinition modelDefinition)
+        {
+            this.formattedStringBuilder = formattedStringBuilder;
+            if (formattedStringBuilder == null)
+                throw new ArgumentNullException(nameof(formattedStringBuilder));
+            this.modelDefinition = modelDefinition;
+
+            propertyCreators = new List<ModelPropertyCreator>();
+        }
+
+        public ModelPropertyCreator AddProperty(PropertyDefinition propertyDefinition)
+        {
+            ModelPropertyCreator creator = new ModelPropertyCreator(formattedStringBuilder, propertyDefinition);
+            propertyCreators.Add(creator);
+
+            return creator;
+        }
+
+        public void Create()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ModelPropertyCreator : IClassPartCreator
+    {
+        private PropertyDefinition propertyDefinition;
+
+        readonly FormattedStringBuilder formattedStringBuilder;
+
+        internal ModelPropertyCreator(FormattedStringBuilder formattedStringBuilder, PropertyDefinition propertyDefinition)
+        {
+            if (formattedStringBuilder == null)
+                throw new ArgumentNullException(nameof(formattedStringBuilder));
+            if (propertyDefinition == null)
+                throw new ArgumentNullException(nameof(propertyDefinition));
+
+            this.propertyDefinition = propertyDefinition;
+            this.formattedStringBuilder = formattedStringBuilder;
+        }
+
+        public void Create()
+        {
+            string quantifier = (propertyDefinition.Cardinality == Cardinality.OneToMany) ? $"IList<{propertyDefinition.ModelDefinition.Name}>" : propertyDefinition.ModelDefinition.Name;
+
+            formattedStringBuilder.AppendLine($"private {quantifier} _{propertyDefinition.Name};");
+            formattedStringBuilder.AppendLine($"public virtual {quantifier} {propertyDefinition.Name}");
+            formattedStringBuilder.AppendLine("{");
+            formattedStringBuilder.LevelDown();
+            formattedStringBuilder.AppendLine($"get {{ return _{propertyDefinition.Name}; }}");
+            formattedStringBuilder.LevelDown();
+            formattedStringBuilder.AppendLine("set");
+            formattedStringBuilder.AppendLine("{");
+            formattedStringBuilder.LevelDown();
+            formattedStringBuilder.AppendLine($"if (!_{propertyDefinition.Name}.Equals(value))");
+            formattedStringBuilder.AppendLine("{");
+            formattedStringBuilder.LevelDown();
+            formattedStringBuilder.AppendLine($"_{propertyDefinition.Name} = value;");
+            formattedStringBuilder.AppendLine("IsDirty = true;");
+            formattedStringBuilder.LevelUp();
+            formattedStringBuilder.AppendLine("}");
+            formattedStringBuilder.LevelUp();
+            formattedStringBuilder.AppendLine("}");
+            formattedStringBuilder.LevelUp();
+            formattedStringBuilder.LevelUp();
+            formattedStringBuilder.AppendLine("}");
+        }
+    }
+
+    public interface IClassPartCreator
+    {
+        void Create();
+    }
+
     public class ModelCreationService
     {
         private readonly string _defaultNamespace;
@@ -25,8 +142,16 @@ namespace OpenB.Modeling
 
         public string CreateClassDefinition(ModelDefinition definition)
         {
+            if (definition == null)
+                throw new ArgumentNullException(nameof(definition));
+
+            if (definition is EncapsulatedModelDefinition)
+            {
+                throw new NotSupportedException($"Cannot create class for encapsulated model {definition.Name}.");
+            }
+
             string baseClass = GetBaseClass(definition.DefinitionFlags);
-            
+
             _classStringBuilder = new FormattedStringBuilder();
             _classStringBuilder.AppendLine("using System;");
             _classStringBuilder.AppendLine("using OpenB.Core;");
@@ -42,7 +167,7 @@ namespace OpenB.Modeling
 
             foreach (PropertyDefinition propertyDefinition in definition.Properties)
             {
-               var propertySignature = PropertyNameFactory.GetPropertyName(propertyDefinition.Name, propertyDefinition.ModelDefinition,
+                string propertySignature = PropertyNameFactory.GetPropertyName(propertyDefinition.Name, propertyDefinition.ModelDefinition,
                     (propertyDefinition.PropertyFlags & PropertyFlags.Required) == PropertyFlags.Required);
 
                 _propertyCreationService.CreatePropertyDefinition(propertyDefinition, propertySignature,
@@ -65,11 +190,37 @@ namespace OpenB.Modeling
         private string GetBaseClass(DefinitionFlags definitionFlags)
         {
             if ((definitionFlags & DefinitionFlags.None) == DefinitionFlags.None)
-           {
-               return "BaseModel";
-           }
+            {
+                return "BaseModel";
+            }
 
-            throw new NotSupportedException("Cannot operate on definitionflag combination");
+            throw new NotSupportedException("Cannot operate on definitionflag combination.");
+        }
+
+        public void CompileAssembly(Project project)
+        {
+            foreach (ModelDefinition definition in project.ModelDefinitions)
+            {
+                string classString = CreateClassDefinition(definition);
+                string fullFilePath = Path.Combine(project.ModelFolder, string.Concat(definition.Name, ".cs"));
+
+                File.WriteAllText(fullFilePath, classString);
+            }
+
+            var codeProvider = new CSharpCodeProvider();
+            var parameters = new CompilerParameters
+            {
+                GenerateExecutable = false,
+                GenerateInMemory = false,
+                OutputAssembly = string.Join(".", project.Name, ".models")
+            };
+
+            parameters.ReferencedAssemblies.Add("OpenB.Modeling.dll");
+            parameters.ReferencedAssemblies.Add("OpenB.Core.dll");
+
+            string[] fileNames = new DirectoryInfo(project.ModelFolder).GetFiles("*.cs").Select(f => f.FullName).ToArray();
+
+            CompilerResults compilerResults = codeProvider.CompileAssemblyFromFile(parameters, fileNames);
         }
 
         public IModel InstantiateModel(ModelDefinition definition, string key, string name, string description)
@@ -102,7 +253,7 @@ namespace OpenB.Modeling
             return
                 compilerResults.CompiledAssembly.CreateInstance(
                     string.Format("{0}.{1}", _defaultNamespace, definition.Name), false, BindingFlags.CreateInstance,
-                    null, new Object[] {key, name, description}, CultureInfo.InvariantCulture, null) as IModel;
+                    null, new Object[] { key, name, description }, CultureInfo.InvariantCulture, null) as IModel;
         }
     }
 }

@@ -22,7 +22,8 @@ namespace OpenB.Modeling
                 throw new ArgumentNullException(nameof(classStringBuilder));
 
             classStringBuilder.AppendLine(string.Format("private {0} _{1};", PropertySignatureFactory.GetSignature(modelName, propertyDefinition.Cardinality), propertyDefinition.Name));
-            classStringBuilder.AppendLine(string.Format("public {0} {1}", modelName, propertyDefinition.Name));
+            classStringBuilder.AppendLine();           
+            classStringBuilder.AppendLine(string.Format("public {0} {1}", PropertySignatureFactory.GetSignature(modelName, propertyDefinition.Cardinality), propertyDefinition.Name));
             classStringBuilder.AppendLine("{");
             classStringBuilder.LevelDown();
             classStringBuilder.AppendLine();

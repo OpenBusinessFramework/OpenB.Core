@@ -23,6 +23,9 @@ namespace OpenB.Modeling
         public ModelDefinition(string key, string name, string description, IList<PropertyDefinition> properties, DefinitionFlags definitionFlags)
             : this(key, name, description)
         {
+            if (properties == null)
+                throw new ArgumentNullException(nameof(properties));
+
             DefinitionFlags = definitionFlags;
             Properties = properties;
         }
@@ -45,6 +48,8 @@ namespace OpenB.Modeling
             Modified = DateTime.Now;
             IsActive = false;
         }
+
+       
 
         public bool IsActive { get; set; }
 

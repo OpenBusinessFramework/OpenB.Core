@@ -27,7 +27,7 @@ namespace OpenB.Modeling.Test
             IModelRepository modelRepository = mockRepository.Stub<IModelRepository>();
             mockRepository.ReplayAll();
             
-            ModelFactory factory = new ModelFactory(new Project("MyFirstProject"));
+            ModelFactory factory = new ModelFactory(new Project("MyFirstProject", null, null));
             IModel model = (IModel)factory.CreateInstance(repository.ModelDefinitions.First(), "KEY", "NAME", "DESCRIPTION");
 
             var dataStoreService = new MongoDataStoreService("localhost", "mydb");

@@ -65,7 +65,7 @@ namespace OpenB.DataStore.MongoDB.Test
             ModelDefinition definition = new ModelDefinition("MYFIRSTDEFININTION", "MyFirstDefinition",
                 "My first definition", new List<PropertyDefinition>() { propertyDefinition }, DefinitionFlags.None);
 
-            ModelFactory factory = new ModelFactory(new Project("MyFirstProject"));
+            ModelFactory factory = new ModelFactory(new Project("MyFirstProject", null,null));
             IModel model = (IModel)factory.CreateInstance(definition, "KEY", "NAME", "DESCRIPTION");
 
             var userGroup = new UserGroup("MY_USERGROUP", "MyUserGroup", "My usergroup");

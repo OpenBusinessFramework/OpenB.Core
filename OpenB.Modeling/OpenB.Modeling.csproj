@@ -60,6 +60,7 @@
     <Compile Include="ModelFactory.cs" />
     <Compile Include="ModelingService.cs" />
     <Compile Include="Permissions.cs" />
+    <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyCreationService.cs" />
     <Compile Include="PropertyDefinition.cs" />
