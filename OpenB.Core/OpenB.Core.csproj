@@ -55,7 +55,14 @@
     <Compile Include="Data\IDataStoreService.cs" />
     <Compile Include="IModel.cs" />
     <Compile Include="IModelFactory.cs" />
-    <Compile Include="Integration\Class1.cs" />
+    <Compile Include="Integration\ApplicationContext.cs" />
+    <Compile Include="Integration\DomainContext.cs" />
+    <Compile Include="Integration\IRepository.cs" />
+    <Compile Include="Integration\IRepository1.cs" />
+    <Compile Include="Integration\MongoDBRepository.cs" />
+    <Compile Include="Integration\RepositoryBase.cs" />
+    <Compile Include="Integration\SQLiteRepository.cs" />
+    <Compile Include="Integration\XmlRepository.cs" />
     <Compile Include="IProject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ACL\User.cs" />

@@ -64,10 +64,6 @@
       <Project>{3A08F31D-9FE5-4434-9B60-9815FD6B6114}</Project>
       <Name>OpenB.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OpenB.Modeling\OpenB.Modeling.csproj">
-      <Project>{9A5BF565-80ED-41BF-8110-E968CC97B477}</Project>
-      <Name>OpenB.Modeling</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

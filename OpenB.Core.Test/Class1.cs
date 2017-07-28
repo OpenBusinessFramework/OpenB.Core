@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using OpenB.Core.Integration;
-using OpenB.Modeling;
 
 namespace OpenB.Core.Test
 {
@@ -27,40 +26,7 @@ namespace OpenB.Core.Test
 
         }
 
-        [Test]
-        public void BuildAssemblyFromDefinitions()
-        {
-            EncapsulatedModelDefinition encapsulatedDateModelDefinition = new EncapsulatedModelDefinition("date", "date", "date", typeof(DateTime));
-            EncapsulatedModelDefinition encapsulateStringModellDefinition = new EncapsulatedModelDefinition("string", "string", "string", typeof(string));
-            EncapsulatedModelDefinition encapsulateIntegerModellDefinition = new EncapsulatedModelDefinition("integer", "integer", "integer", typeof(int));
-
-            PropertyDefinition dateOfBirthDefinition = new PropertyDefinition("DateOfBirth", encapsulatedDateModelDefinition, Cardinality.OneToOne);
-            PropertyDefinition cityDefinition = new PropertyDefinition("City", encapsulateStringModellDefinition, Cardinality.OneToOne, PropertyFlags.None);
-
-            IList<PropertyDefinition> personProperties = new List<PropertyDefinition> { { dateOfBirthDefinition }, { cityDefinition } };
-            ModelDefinition personDefinition = new ModelDefinition("Person", "Person", "Person", personProperties, DefinitionFlags.None);
-
-            PropertyDefinition streetName = new PropertyDefinition("Street", encapsulateStringModellDefinition);
-            PropertyDefinition houseNumber = new PropertyDefinition("HouseNumber", encapsulateIntegerModellDefinition);
-            PropertyDefinition postalCode = new PropertyDefinition("PostalCode", encapsulateStringModellDefinition);
-
-            IList<PropertyDefinition> addressProperties = new List<PropertyDefinition> { { streetName }, { houseNumber }, { postalCode } };
-            ModelDefinition addressModelDefinition = new ModelDefinition("Address", "Address", "Address", addressProperties, DefinitionFlags.None);
-
-            PropertyDefinition famliyAddress = new PropertyDefinition("Address", addressModelDefinition);
-            PropertyDefinition familyMembersDefinition = new PropertyDefinition("Members", personDefinition, Cardinality.OneToMany);
-
-            IList<PropertyDefinition> familyProperties = new List<PropertyDefinition> { { famliyAddress }, { familyMembersDefinition } };
-            ModelDefinition familyModelDefinition = new ModelDefinition("Familiy", "Familiy", "Familiy", familyProperties, DefinitionFlags.None);
-
-            IList<ModelDefinition> models = new List<ModelDefinition> { { personDefinition }, { addressModelDefinition }, { familyModelDefinition } };
-
-            var baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-            Project project = new Project("Administration", models, baseFolder);
-
-            ModelCreationService modelCreationService = new ModelCreationService("blaat");
-            modelCreationService.CompileAssembly(project);
-        }
+       
     }
 
 

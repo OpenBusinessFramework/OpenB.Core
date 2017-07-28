@@ -54,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModelRetrievalTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -68,10 +67,6 @@
     <ProjectReference Include="..\OpenB.DataStore.MongoDB\OpenB.DataStore.MongoDB.csproj">
       <Project>{a44db555-f7c2-49b9-a6c3-517460a8d93a}</Project>
       <Name>OpenB.DataStore.MongoDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OpenB.Modeling\OpenB.Modeling.csproj">
-      <Project>{9A5BF565-80ED-41BF-8110-E968CC97B477}</Project>
-      <Name>OpenB.Modeling</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
